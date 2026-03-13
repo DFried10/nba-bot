@@ -6,6 +6,10 @@ from nba_api.stats.endpoints import (
     teaminfocommon,
     teamestimatedmetrics
 )
+from nba_api.stats.library.parameters import (
+    PerModeDetailed,
+    MeasureTypeDetailedDefense
+)
 from nba_api.stats.static import players, teams
 import time
 from config import API_DELAY
@@ -112,7 +116,7 @@ def get_team_stats(team_id: int) -> dict:
         # Last 10 games
         print("Fetching last 10 games...")
         time.sleep(API_DELAY)
-        last10 = with_retry(lambda: leaguedashteamstats.LeagueDashTeamStats(last_n_games=10, timeout=10))
+        last10 = with_retry(lambda: leaguedashteamstats.LeagueDashTeamStats(per_mode_detailed=PerModeDetailed.per_100_possessions, measure_type_detailed_defense=MeasureTypeDetailedDefense.advanced, last_n_games=10, timeout=10))
         df_last10 = last10.get_data_frames()[0]
         last10_row = df_last10[df_last10["TEAM_ID"] == team_id]
         last10_row = last10_row.iloc[0] if not last10_row.empty else None
@@ -121,13 +125,10 @@ def get_team_stats(team_id: int) -> dict:
             "name": team_row["TEAM_NAME"],
             "wins": int(team_row["W"]),
             "losses": int(team_row["L"]),
-            # "net_rating": round(float(team_row["NET_RATING"]), 1),
-            # "off_rating": round(float(team_row["OFF_RATING"]), 1),
-            # "def_rating": round(float(team_row["DEF_RATING"]), 1),
             "last10": {
                 "wins": int(last10_row["W"]) if last10_row is not None else "N/A",
                 "losses": int(last10_row["L"]) if last10_row is not None else "N/A",
-                # "net_rating": round(float(last10_row["NET_RATING"]), 1) if last10_row is not None else "N/A",
+                "net_rating": round(float(last10_row["NET_RATING"]), 1) if last10_row is not None else "N/A",
             },
         }
 

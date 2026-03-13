@@ -48,11 +48,11 @@ class TeamCommands(commands.Cog):
 
             # Last 10
             l10 = stats["last10"]
-            # net = l10['net_rating']
-            # net_str = f"{'+' if isinstance(net, float) and net > 0 else ''}{net}"
+            net = l10['net_rating']
+            net_str = f"{'+' if isinstance(net, float) and net > 0 else ''}{net}"
             embed.add_field(
                 name="Last 10 Games",
-                value=f"{l10['wins']}-{l10['losses']}",
+                value=f"{l10['wins']}-{l10['losses']}\nNet Rtg {net_str}",
                 inline=False,
             )
 
