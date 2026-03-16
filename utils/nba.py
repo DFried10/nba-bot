@@ -116,7 +116,7 @@ def get_team_stats(team_id: int) -> dict:
 
         # Season net rating
         print("Fetching season stats...")
-        league_stats = with_retry(lambda: leaguedashteamstats.LeagueDashTeamStats(timeout=10))
+        league_stats = with_retry(lambda: leaguedashteamstats.LeagueDashTeamStats(timeout=10, headers=headers))
         df = league_stats.get_data_frames()[0]
         team_row = df[df["TEAM_ID"] == team_id]
 
@@ -128,7 +128,7 @@ def get_team_stats(team_id: int) -> dict:
         # Last 10 games
         print("Fetching last 10 games...")
         time.sleep(API_DELAY)
-        last10 = with_retry(lambda: leaguedashteamstats.LeagueDashTeamStats(per_mode_detailed=PerModeDetailed.per_100_possessions, measure_type_detailed_defense=MeasureTypeDetailedDefense.advanced, last_n_games=10, timeout=10))
+        last10 = with_retry(lambda: leaguedashteamstats.LeagueDashTeamStats(per_mode_detailed=PerModeDetailed.per_100_possessions, measure_type_detailed_defense=MeasureTypeDetailedDefense.advanced, last_n_games=10, timeout=10, headers=headers))
         df_last10 = last10.get_data_frames()[0]
         last10_row = df_last10[df_last10["TEAM_ID"] == team_id]
         last10_row = last10_row.iloc[0] if not last10_row.empty else None
@@ -147,7 +147,7 @@ def get_team_stats(team_id: int) -> dict:
         # Upcoming schedule (last 5 games from game log as a proxy)
         print("Fetching game log...")
         time.sleep(API_DELAY)
-        game_log = with_retry(lambda: teamgamelog.TeamGameLog(team_id=team_id, timeout=10))
+        game_log = with_retry(lambda: teamgamelog.TeamGameLog(team_id=team_id, timeout=10, headers=headers))
         games_df = game_log.get_data_frames()[0]
         recent_games = []
         for _, game in games_df.head(5).iterrows():
