@@ -15,7 +15,19 @@ import time
 from config import API_DELAY
 from thefuzz import process
 
-
+headers = {
+    'Host': 'stats.nba.com',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'x-nba-stats-origin': 'stats',
+    'x-nba-stats-token': 'true',
+    'Connection': 'keep-alive',
+    'Referer': 'https://www.nba.com/',
+    'Pragma': 'no-cache',
+    'Cache-Control': 'no-cache',
+}
 
 def find_player(name: str):
     """Find a player by name, returns the first match or None."""
@@ -53,7 +65,7 @@ def find_team(name: str):
 def get_player_stats(player_id: int) -> dict:
     """Get current season stats and per 36 stats for a player."""
     time.sleep(API_DELAY)  # Avoid rate limiting
-    career = playercareerstats.PlayerCareerStats(player_id=player_id)
+    career = playercareerstats.PlayerCareerStats(player_id=player_id, timeout=10, headers=headers)
     df = career.get_data_frames()[0]
 
     if df.empty:
